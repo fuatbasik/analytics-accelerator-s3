@@ -12,3 +12,4 @@ plugins {
 
 rootProject.name = "analytics-accelerator-s3"
 include("common", "object-client", "input-stream")
+include("lincheck")
