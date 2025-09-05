@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.parquet.format)
     implementation(libs.slf4j.api)
     implementation(libs.caffeine)
+    implementation("software.aws.rds:aws-mysql-jdbc:1.1.15")
 
     jmhImplementation(libs.s3)
     jmhImplementation(libs.s3.transfer.manager)
