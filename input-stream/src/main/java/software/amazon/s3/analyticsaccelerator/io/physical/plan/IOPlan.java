@@ -58,4 +58,33 @@ public class IOPlan {
         + this.prefetchRanges.stream().map(Range::toString).collect(Collectors.joining(","))
         + "]";
   }
+
+  /**
+   * Coalesces the prefetch ranges in this plan. The coalescing is done in-place.
+   *
+   * @param tolerance the tolerance for coalescing
+   */
+  public void coalesce(long tolerance) {
+    if (this.prefetchRanges.size() < 2) {
+      return;
+    }
+    // Ensure ranges are ordered by their start position.
+    Collections.sort(this.prefetchRanges);
+    ArrayList<Range> coalescedRanges = new ArrayList<>(this.prefetchRanges.size());
+    Range currentRange = this.prefetchRanges.get(0);
+    for (int i = 1; i < this.prefetchRanges.size(); i++) {
+      Range nextRange = this.prefetchRanges.get(i);
+      // Always compare with the last checked interval to avoid n^2 comparisons
+      if (currentRange.getEnd() + tolerance >= nextRange.getStart()) {
+        currentRange =
+            new Range(currentRange.getStart(), Math.max(currentRange.getEnd(), nextRange.getEnd()));
+      } else {
+        coalescedRanges.add(currentRange);
+        currentRange = nextRange;
+      }
+    }
+    coalescedRanges.add(currentRange);
+    this.prefetchRanges.clear();
+    this.prefetchRanges.addAll(coalescedRanges);
+  }
 }
