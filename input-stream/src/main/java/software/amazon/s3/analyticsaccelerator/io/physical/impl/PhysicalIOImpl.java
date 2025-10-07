@@ -218,15 +218,28 @@ public class PhysicalIOImpl implements PhysicalIO {
    * Async method capable of executing a logical IO plan.
    *
    * @param ioPlan the plan to execute asynchronously
+   * @param readMode the read mode for which this IoPlan is being executed
    * @return an IOPlanExecution object tracking the execution of the submitted plan
    */
   @Override
   public IOPlanExecution execute(IOPlan ioPlan, ReadMode readMode) {
+    return execute(ioPlan, readMode, false);
+  }
 
-    if (configuration.isRequestCoalesce()) {
-      ioPlan.coalesce(configuration.getRequestCoalesceTolerance());
+  /**
+   * Async method capable of executing a logical IO plan with request coalesce flag.
+   *
+   * @param ioPlan the plan to execute asynchronously
+   * @param readMode the read mode for which this IoPlan is being executed
+   * @param coalesceRequests flag to enable request coalescing
+   * @return an IOPlanExecution object tracking the execution of the submitted plan
+   */
+  public IOPlanExecution execute(IOPlan ioPlan, ReadMode readMode, boolean coalesceRequests) {
+    if (coalesceRequests) {
+      if (configuration.isRequestCoalesce()) {
+        ioPlan.coalesce(configuration.getRequestCoalesceTolerance());
+      }
     }
-
     return telemetry.measureVerbose(
         () ->
             Operation.builder()
@@ -326,7 +339,7 @@ public class PhysicalIOImpl implements PhysicalIO {
               objectRange.getOffset(), objectRange.getOffset() + objectRange.getLength() - 1));
     }
 
-    execute(new IOPlan(ranges), ReadMode.READ_VECTORED);
+    execute(new IOPlan(ranges), ReadMode.READ_VECTORED, true);
   }
 
   /**

@@ -70,7 +70,7 @@ public class IOPlan {
     }
     // Ensure ranges are ordered by their start position.
     Collections.sort(this.prefetchRanges);
-    ArrayList<Range> coalescedRanges = new ArrayList<>(this.prefetchRanges.size());
+    int writeIndex = 0;
     Range currentRange = this.prefetchRanges.get(0);
     for (int i = 1; i < this.prefetchRanges.size(); i++) {
       Range nextRange = this.prefetchRanges.get(i);
@@ -79,12 +79,15 @@ public class IOPlan {
         currentRange =
             new Range(currentRange.getStart(), Math.max(currentRange.getEnd(), nextRange.getEnd()));
       } else {
-        coalescedRanges.add(currentRange);
+        this.prefetchRanges.set(writeIndex++, currentRange);
         currentRange = nextRange;
       }
     }
-    coalescedRanges.add(currentRange);
-    this.prefetchRanges.clear();
-    this.prefetchRanges.addAll(coalescedRanges);
+    this.prefetchRanges.set(writeIndex++, currentRange);
+    // writeIndex now shows how many coalesced ranges added to the list.
+    // We should remove residue ones from the original list.
+    while (this.prefetchRanges.size() > writeIndex) {
+      this.prefetchRanges.remove(this.prefetchRanges.size() - 1);
+    }
   }
 }

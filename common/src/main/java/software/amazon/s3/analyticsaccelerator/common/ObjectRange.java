@@ -49,6 +49,7 @@ public class ObjectRange {
 
   @Override
   public String toString() {
-    return String.format("offset: %d, length: %d", offset, length);
+    return String.format(
+        "offset: %d, length: %d, completable-future: %s", offset, length, byteBuffer.toString());
   }
 }

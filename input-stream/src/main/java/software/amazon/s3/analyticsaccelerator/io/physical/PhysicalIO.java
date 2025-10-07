@@ -39,6 +39,17 @@ public interface PhysicalIO extends RandomAccessReadable {
   IOPlanExecution execute(IOPlan ioPlan, ReadMode readMode) throws IOException;
 
   /**
+   * Async method capable of executing a logical IO plan with request coalesce flag.
+   *
+   * @param ioPlan the plan to execute asynchronously
+   * @param readMode the read mode for which this IoPlan is being executed
+   * @param coalesceRequests flag to enable request coalescing
+   * @return an IOPlanExecution object tracking the execution of the submitted plan
+   */
+  IOPlanExecution execute(IOPlan ioPlan, ReadMode readMode, boolean coalesceRequests)
+      throws IOException;
+
+  /**
    * Fetches the list of provided ranges in parallel. Byte buffers are created using the allocate
    * method, and may be direct or non-direct depending on the implementation of the allocate method.
    * When a provided range has been fully read, the associated future for it is completed.
