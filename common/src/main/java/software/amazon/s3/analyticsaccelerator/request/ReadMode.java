@@ -28,7 +28,7 @@ public enum ReadMode {
   SMALL_OBJECT_PREFETCH(true, false),
   SEQUENTIAL_FILE_PREFETCH(true, false),
   DICTIONARY_PREFETCH(false, false),
-  COLUMN_PREFETCH(false, false),
+  COLUMN_PREFETCH(false, true),
   REMAINING_COLUMN_PREFETCH(false, false),
   PREFETCH_TAIL(false, false),
   READ_VECTORED(false, true);
@@ -58,6 +58,6 @@ public enum ReadMode {
    * @return true if requests should be coalesced
    */
   public boolean coalesceRequests() {
-    return allowRequestExtension;
+    return coalesceRequests;
   }
 }
